@@ -1,0 +1,1 @@
+INSERT INTO tb_user (email, password,role) VALUES ('teste@email.com', '$2a$10$iH/F3XdL8IlkbOApuPM7BOTiGvp3GTjnYWXgNsuZfwfKAMx9IE3Ny','ROE_TESTE');

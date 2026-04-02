@@ -38,6 +38,9 @@ public class AuthService {
         // Gerar refresh token
         String refreshToken = jwtService.generateRefreshToken(user);
 
+        System.out.println("Senha digitada: " + request.getPassword());
+        System.out.println("Senha banco: " + user.getPassword());
+
         // Retornar resposta
         return new LoginResponse(token, refreshToken);
     }
