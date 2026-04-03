@@ -2,16 +2,12 @@ package com.meneses.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.List;
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
-public class LoginResponse {
-    private String token;
-    private String refreshtoken;
+public class UserResponse {
+    private String email;
     private List<String> roles;
 }

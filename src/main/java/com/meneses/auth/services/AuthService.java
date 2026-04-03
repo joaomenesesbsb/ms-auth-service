@@ -2,8 +2,11 @@ package com.meneses.auth.services;
 
 import com.meneses.auth.dto.LoginRequest;
 import com.meneses.auth.dto.LoginResponse;
+import com.meneses.auth.dto.RegisterRequest;
+import com.meneses.auth.dto.UserResponse;
 import com.meneses.auth.entities.Role;
 import com.meneses.auth.entities.User;
+import com.meneses.auth.repositories.RoleRepository;
 import com.meneses.auth.repositories.UserRepository;
 import com.meneses.auth.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,9 @@ public class AuthService {
 
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     public LoginResponse login(LoginRequest request) {
 
@@ -46,7 +52,27 @@ public class AuthService {
         // Gerar refresh token
         String refreshToken = jwtService.generateRefreshToken(user);
 
-        // Retornar resposta
         return new LoginResponse(token, refreshToken, roles);
+    }
+
+    public UserResponse register(RegisterRequest request) {
+
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Email já cadastrado");
+        }
+
+        User user = new User();
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        Role role = roleRepository.findByName("ROLE_USER")
+                .orElseThrow(() -> new RuntimeException("Role não encontrada"));
+        user.getRoles().add(role);
+
+        userRepository.save(user);
+
+        UserResponse dto = new UserResponse(user.getEmail(),
+                user.getRoles().stream().map(Role::getName).toList());
+        return dto;
     }
 }

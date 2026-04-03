@@ -5,13 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
-@AllArgsConstructor
+@Setter
 @NoArgsConstructor
-public class LoginResponse {
-    private String token;
-    private String refreshtoken;
-    private List<String> roles;
+@AllArgsConstructor
+public class RoleRequest {
+    private String roleName;
 }

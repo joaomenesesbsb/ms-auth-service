@@ -2,6 +2,7 @@ package com.meneses.auth.security;
 
 import com.meneses.auth.entities.User;
 import com.meneses.auth.repositories.UserRepository;
+import com.meneses.auth.services.AuthService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,9 +31,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+
         final String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }

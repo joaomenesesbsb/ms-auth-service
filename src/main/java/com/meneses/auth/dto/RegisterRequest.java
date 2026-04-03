@@ -3,12 +3,11 @@ package com.meneses.auth.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginRequest {
+public class RegisterRequest {
     private String email;
     private String password;
 }
