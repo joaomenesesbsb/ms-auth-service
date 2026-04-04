@@ -6,8 +6,10 @@ import com.meneses.auth.entities.User;
 import com.meneses.auth.exceptions.ResourceNotFoundException;
 import com.meneses.auth.repositories.RoleRepository;
 import com.meneses.auth.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.Collectors;
 
@@ -20,10 +22,11 @@ public class UserService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Transactional(readOnly = true)
     public UserResponse findById(Long id){
 
         User user = userRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Usuario nao encontrado")
+                () -> new ResourceNotFoundException("Usuario nao encontrado com o ID: " + id)
         );
 
         UserResponse response = new UserResponse(user.getEmail(),user.getRoles()
@@ -33,6 +36,18 @@ public class UserService {
         return response;
     }
 
+    public UserResponse update(Long id, UserResponse responseDto){
+        try{
+            User entity = userRepository.getReferenceById(id);
+            entity.setEmail(responseDto.getEmail());
+            entity = userRepository.save(entity);
+            return mapToResponse(entity);
+        }
+        catch (EntityNotFoundException e){
+            throw  new ResourceNotFoundException("Usuario nao enconntrado com o ID: " + id);
+        }
+    }
+
     public void addRoleToUser(Long userId, String roleName) {
 
         User user = userRepository.findById(userId).orElseThrow();
@@ -40,6 +55,15 @@ public class UserService {
 
         user.getRoles().add(role);
         userRepository.save(user);
+    }
+
+    private UserResponse mapToResponse(User user) {
+        return new UserResponse(
+                user.getEmail(),
+                user.getRoles().stream()
+                        .map(Role::getName)
+                        .collect(Collectors.toList())
+        );
     }
 
 }
