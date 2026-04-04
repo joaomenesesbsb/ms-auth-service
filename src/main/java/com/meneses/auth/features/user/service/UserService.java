@@ -1,13 +1,15 @@
-package com.meneses.auth.domain.user.service;
+package com.meneses.auth.features.user.service;
 
-import com.meneses.auth.domain.role.entity.Role;
+import com.meneses.auth.features.role.entity.Role;
 import com.meneses.auth.exceptions.ResourceNotFoundException;
-import com.meneses.auth.domain.role.repository.RoleRepository;
-import com.meneses.auth.domain.user.entity.User;
-import com.meneses.auth.domain.user.dto.UserResponse;
-import com.meneses.auth.domain.user.repository.UserRepository;
+import com.meneses.auth.features.role.repository.RoleRepository;
+import com.meneses.auth.features.user.entity.User;
+import com.meneses.auth.features.user.dto.UserResponse;
+import com.meneses.auth.features.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +38,15 @@ public class UserService {
         return response;
     }
 
+    @Transactional(readOnly = true)
+    public Page<UserResponse> findAll(String email, Pageable pageable) {
+
+        Page<User> userPage = userRepository.findByEmailContainingIgnoreCase(email, pageable);
+        return userPage.map(user -> new UserResponse(user.getEmail(),
+                user.getRoles().stream().map(Role::getName).collect(Collectors.toList())));
+    }
+
+    @Transactional
     public UserResponse update(Long id, UserResponse responseDto){
         try{
             User entity = userRepository.getReferenceById(id);

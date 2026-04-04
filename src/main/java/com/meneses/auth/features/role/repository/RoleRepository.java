@@ -1,6 +1,6 @@
-package com.meneses.auth.domain.role.repository;
+package com.meneses.auth.features.role.repository;
 
-import com.meneses.auth.domain.role.entity.Role;
+import com.meneses.auth.features.role.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

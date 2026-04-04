@@ -1,4 +1,4 @@
-package com.meneses.auth.exceptions.handlers;
+package com.meneses.auth.config.handlers;
 
 import com.meneses.auth.exceptions.CustomError;
 import com.meneses.auth.exceptions.ResourceNotFoundException;

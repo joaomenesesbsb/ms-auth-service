@@ -1,10 +1,10 @@
-package com.meneses.auth.domain.auth.controller;
+package com.meneses.auth.features.auth.controller;
 
-import com.meneses.auth.domain.auth.service.AuthService;
-import com.meneses.auth.domain.auth.dto.LoginRequest;
-import com.meneses.auth.domain.auth.dto.LoginResponse;
-import com.meneses.auth.domain.auth.dto.RegisterRequest;
-import com.meneses.auth.domain.user.dto.UserResponse;
+import com.meneses.auth.features.auth.service.AuthService;
+import com.meneses.auth.features.auth.dto.LoginRequest;
+import com.meneses.auth.features.auth.dto.LoginResponse;
+import com.meneses.auth.features.auth.dto.RegisterRequest;
+import com.meneses.auth.features.user.dto.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

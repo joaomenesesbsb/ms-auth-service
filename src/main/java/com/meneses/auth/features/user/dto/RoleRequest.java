@@ -1,11 +1,11 @@
-package com.meneses.auth.domain.user.dto;
+package com.meneses.auth.features.user.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoleRequest {

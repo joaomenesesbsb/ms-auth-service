@@ -1,6 +1,6 @@
-package com.meneses.auth.domain.user.entity;
+package com.meneses.auth.features.user.entity;
 
-import com.meneses.auth.domain.role.entity.Role;
+import com.meneses.auth.features.role.entity.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
