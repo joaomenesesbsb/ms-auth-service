@@ -48,9 +48,11 @@ public class AuthService {
 
         // Gerar token JWT
         String token = jwtService.generateToken(user);
+        System.out.println("TOKEN: " + token);
 
         // Gerar refresh token
         String refreshToken = jwtService.generateRefreshToken(user);
+        System.out.println("REFRESH TOKEN: " + refreshToken);
 
         return new LoginResponse(token, refreshToken, roles);
     }

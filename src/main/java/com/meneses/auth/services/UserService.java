@@ -16,9 +16,6 @@ public class UserService {
     @Autowired
     private RoleRepository roleRepository;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public void addRoleToUser(Long userId, String roleName) {
 

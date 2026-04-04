@@ -2,11 +2,17 @@ package com.meneses.auth.controllers;
 
 import com.meneses.auth.dto.RoleRequest;
 import com.meneses.auth.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Usuario", description = "Endpoints de Adicionar Role" )
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -14,11 +20,16 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/info")
-    public String userInfo() {
-        return "Informações do usuário";
-    }
-
+    @Operation(
+            summary = "Adicionar Role",
+            description = "Adiciona Role ao usuario existente no banco"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuário encontrado"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/{id}/roles")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addRole(
