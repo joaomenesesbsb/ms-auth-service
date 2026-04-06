@@ -7,6 +7,7 @@ import com.meneses.auth.features.auth.dto.RegisterRequestDTO;
 import com.meneses.auth.features.auth.service.AuthService;
 import com.meneses.auth.features.user.dto.UserResponseDTO;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,46 +35,57 @@ class AuthControllerTest {
     @MockitoBean
     private AuthService authService;
 
-    @Test
-    @DisplayName("Deve realizar login com sucesso e retornar 200")
-    void loginSucesso() throws Exception {
+    @Nested
+    class Login {
+        @Test
+        @DisplayName("Deve realizar login com sucesso e retornar 200")
+        void shouldReturn200_whenLoginIsSuccessful() throws Exception {
 
-        LoginRequestDTO request = new LoginRequestDTO("test@email.com", "password123");
-        LoginResponseDTO response = new LoginResponseDTO("token-jwt-fake", "refresh-token-fake");
+            LoginRequestDTO request = new LoginRequestDTO("test@email.com", "password123");
+            LoginResponseDTO response = new LoginResponseDTO("token-jwt-fake", "refresh-token-fake");
 
-        Mockito.when(authService.login(Mockito.any(LoginRequestDTO.class))).thenReturn(response);
+            Mockito.when(authService.login(Mockito.any(LoginRequestDTO.class))).thenReturn(response);
 
-        mockMvc.perform(post("/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value("token-jwt-fake"))
-                .andExpect(jsonPath("$.refreshToken").value("refresh-token-fake"));
+            mockMvc.perform(post("/auth/login")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.token").value("token-jwt-fake"))
+                    .andExpect(jsonPath("$.refreshToken").value("refresh-token-fake"));
+        }
+
+        @Test
+        @DisplayName("Deve retornar 400 quando o corpo da requisição de login for inválido")
+        void shouldReturn400_whenLoginRequestIsInvalid() throws Exception {
+            // Simula envio de corpo vazio
+            mockMvc.perform(post("/auth/login")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(""))
+                    .andExpect(status().isBadRequest());
+        }
+
     }
 
-    @Test
-    @DisplayName("Deve registrar um usuário com sucesso e retornar 201")
-    void registerSucesso() throws Exception {
+    @Nested
+    class Register{
+        @Test
+        @DisplayName("Deve registrar um usuário com sucesso e retornar 201")
+        void shouldReturn201_whenUserIsRegistered() throws Exception {
 
-        RegisterRequestDTO request = new RegisterRequestDTO("novo@email.com", "senha123");
-        UserResponseDTO response = new UserResponseDTO("novo@email.com");
+            RegisterRequestDTO request = new RegisterRequestDTO("novo@email.com", "senha123");
+            UserResponseDTO response = new UserResponseDTO("novo@email.com");
 
-        Mockito.when(authService.register(Mockito.any(RegisterRequestDTO.class))).thenReturn(response);
+            Mockito.when(authService.register(Mockito.any(RegisterRequestDTO.class))).thenReturn(response);
 
-        mockMvc.perform(post("/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.email").value("novo@email.com"));
+            mockMvc.perform(post("/auth/register")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.email").value("novo@email.com"));
+        }
     }
 
-    @Test
-    @DisplayName("Deve retornar 400 quando o corpo da requisição de login for inválido")
-    void loginBadRequest() throws Exception {
-        // Simula envio de corpo vazio
-        mockMvc.perform(post("/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(""))
-                .andExpect(status().isBadRequest());
-    }
+
+
+
 }

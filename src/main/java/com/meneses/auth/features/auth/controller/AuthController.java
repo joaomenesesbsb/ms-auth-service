@@ -30,7 +30,7 @@ public interface AuthController {
 
     @Operation(summary = "Registrar novo usuario", description = "Cria um novo usuário com role padrão USER")
     @ApiResponses({
-            @ApiResponse( responseCode = "200", description = "Usuário cadastrado com sucesso", content = @Content( mediaType = "application/json",  schema = @Schema(implementation = UserResponseDTO.class))),
+            @ApiResponse( responseCode = "201", description = "Usuário cadastrado com sucesso", content = @Content( mediaType = "application/json",  schema = @Schema(implementation = UserResponseDTO.class))),
             @ApiResponse( responseCode = "400", description = "Dados inválidos", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse( responseCode = "409", description = "Email já cadastrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse( responseCode = "500", description = "Erro interno do servidor", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
