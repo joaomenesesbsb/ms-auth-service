@@ -58,7 +58,7 @@ class AuthControllerTest {
         @Test
         @DisplayName("Deve retornar 400 quando o corpo da requisição de login for inválido")
         void shouldReturn400_whenLoginRequestIsInvalid() throws Exception {
-            // Simula envio de corpo vazio
+
             mockMvc.perform(post("/auth/login")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(""))
