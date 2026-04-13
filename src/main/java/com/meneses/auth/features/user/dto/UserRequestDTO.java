@@ -13,10 +13,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserRequestDTO {
+
     @Schema(description = "Digite seu novo email", example = "admin@email.com")
     @NotBlank(message = "O e-mail é obrigatório")
     @Email(message = "E-mail inválido")
     private String email;
+
     @Schema(description = "Lista de roles do usuario",
             example = "[\"ROLE_ADMIN\", \"ROLE_USER\"]")
     private List<String> roles;

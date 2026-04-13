@@ -1,4 +1,4 @@
-package com.meneses.auth.users.service;
+package com.meneses.auth.features.users.service;
 
 import com.meneses.auth.exceptions.DataBaseException;
 import com.meneses.auth.exceptions.ResourceNotFoundException;

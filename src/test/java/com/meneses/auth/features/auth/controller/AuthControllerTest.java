@@ -1,4 +1,4 @@
-package com.meneses.auth.featues.auth.controller;
+package com.meneses.auth.features.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meneses.auth.features.auth.dto.LoginRequestDTO;

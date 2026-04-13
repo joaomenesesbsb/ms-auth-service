@@ -1,6 +1,7 @@
 package com.meneses.auth.features.user.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,5 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RoleRequestDTO {
     @Schema(description = "Nome do role a ser adicionado", example = "ROLE_ADMIN")
+    @NotEmpty(message = "O usuário deve ter pelo menos uma role")
     private String roleName;
 }

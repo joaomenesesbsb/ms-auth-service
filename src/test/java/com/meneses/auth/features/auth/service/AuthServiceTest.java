@@ -1,10 +1,9 @@
-package com.meneses.auth.featues.auth.service;
+package com.meneses.auth.features.auth.service;
 
 import com.meneses.auth.exceptions.ResourceNotFoundException;
 import com.meneses.auth.features.auth.dto.LoginRequestDTO;
 import com.meneses.auth.features.auth.dto.LoginResponseDTO;
 import com.meneses.auth.features.auth.dto.RegisterRequestDTO;
-import com.meneses.auth.features.auth.service.AuthService;
 import com.meneses.auth.features.role.entity.Role;
 import com.meneses.auth.features.role.repository.RoleRepository;
 import com.meneses.auth.features.user.entity.User;

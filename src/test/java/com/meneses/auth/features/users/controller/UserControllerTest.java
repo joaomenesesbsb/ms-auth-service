@@ -1,4 +1,4 @@
-package com.meneses.auth.users.controller;
+package com.meneses.auth.features.users.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meneses.auth.exceptions.ResourceNotFoundException;
@@ -14,6 +14,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -21,8 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -128,4 +130,38 @@ public class UserControllerTest {
         }
     }
 
+
+    @Nested
+    @DisplayName("Testes de FindAll (Paginação e Filtro)")
+    class FindAll {
+
+        @Test
+        @DisplayName("Deve retornar 200 e página de usuários quando findAll for chamado")
+        void shouldReturnPageOfUsers_whenFindAllCalled() throws Exception {
+            Page<UserResponseDTO> page = new PageImpl<>(Collections.singletonList(response));
+
+            when(userService.findAll(anyString(), any(Pageable.class))).thenReturn(page);
+
+            mockMvc.perform(get("/users")
+                            .param("email", "teste")
+                            .param("page", "0")
+                            .param("size", "10")
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.content[0].email").value(response.getEmail()))
+                    .andExpect(jsonPath("$.totalElements").value(1));
+        }
+
+        @Test
+        @DisplayName("Deve retornar 200 mesmo sem parâmetros de paginação (usando defaults)")
+        void shouldReturnOk_whenNoParamsProvided() throws Exception {
+
+            Page<UserResponseDTO> emptyPage = new PageImpl<>(Collections.emptyList());
+            when(userService.findAll(eq(""), any(Pageable.class))).thenReturn(emptyPage);
+
+            mockMvc.perform(get("/users")
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+        }
+    }
 }
