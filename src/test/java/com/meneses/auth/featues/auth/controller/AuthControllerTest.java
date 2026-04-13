@@ -37,6 +37,7 @@ class AuthControllerTest {
 
     @Nested
     class Login {
+
         @Test
         @DisplayName("Deve realizar login com sucesso e retornar 200")
         void shouldReturn200_whenLoginIsSuccessful() throws Exception {
