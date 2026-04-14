@@ -34,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        final String token = recoverToken(request);
+        String token = jwtService.extractToken(request);
 
         if (token != null && blacklistService.isBlacklisted(token)) {
 
@@ -49,14 +49,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
         filterChain.doFilter(request, response);
-    }
-
-    private String recoverToken(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return null;
-        }
-        return authHeader.substring(7);
     }
 
     private void authenticateUser(String token, String email) {

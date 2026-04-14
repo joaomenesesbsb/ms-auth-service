@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,4 +38,7 @@ public interface AuthController {
     })
     @PostMapping("/register")
     ResponseEntity<UserResponseDTO> register(@RequestBody RegisterRequestDTO request);
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request);
 }
