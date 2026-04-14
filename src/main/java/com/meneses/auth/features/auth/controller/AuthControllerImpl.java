@@ -40,4 +40,6 @@ public class AuthControllerImpl implements AuthController{
         UserResponseDTO response = authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+
 }

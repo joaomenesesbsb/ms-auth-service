@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,18 +28,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private TokenBlacklistService blacklistService;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         final String token = recoverToken(request);
 
-        if (token != null) {
-            String email = jwtService.extractUsername(token);
+        if (token != null && blacklistService.isBlacklisted(token)) {
 
-            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.getWriter().write("Token has been invalidated (Logged out)");
+            return;
+        }
+
+            if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                String email = jwtService.extractUsername(token);
                 authenticateUser(token, email);
             }
-        }
+
         filterChain.doFilter(request, response);
     }
 
