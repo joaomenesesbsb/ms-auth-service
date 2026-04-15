@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-@Tag(name = "Autenticacao", description = "Endpoints de login e registro")
+@Tag(name = "Authentication")
 @RestController
 @RequestMapping("/auth")
 public class AuthControllerImpl implements AuthController{
@@ -31,7 +31,7 @@ public class AuthControllerImpl implements AuthController{
 
     @Override
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO request) {
-        logger.info("Tentativa de login para o usuário: [{}]", request.getEmail());
+        logger.info("Login attempt for the user: [{}]", request.getEmail());
 
         LoginResponseDTO loginResponseDTO = authService.login(request);
         return ResponseEntity.ok(loginResponseDTO);
@@ -39,7 +39,7 @@ public class AuthControllerImpl implements AuthController{
 
     @Override
     public ResponseEntity<UserResponseDTO> register(@RequestBody RegisterRequestDTO request) {
-        logger.info("Solicitação de registro para o e-mail: [{}]", request.getEmail());
+        logger.info("Registration request via email: [{}]", request.getEmail());
 
         UserResponseDTO response = authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
