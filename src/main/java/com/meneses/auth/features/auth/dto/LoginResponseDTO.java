@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginResponseDTO {
-    @Schema(description = "Token JWT. Use no header: Authorization: Bearer {token}",
+    @Schema(description = "Token JWT. Use in header: Authorization: Bearer {token}",
             example = "eyJhbGciOiJIUzI1NiJ9...")
     private String token;
-    @Schema(description = "Token para renovação do JWT",
+    @Schema(description = "token for JWT renewal",
             example = "eyJhbGciOiJIUzI1NiJ9...")
     private String refreshToken;
 }

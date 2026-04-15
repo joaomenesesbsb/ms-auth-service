@@ -20,6 +20,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -49,7 +51,7 @@ class AuthControllerTest {
             LoginRequestDTO request = new LoginRequestDTO("test@email.com", "password123");
             LoginResponseDTO response = new LoginResponseDTO("token-jwt-fake", "refresh-token-fake");
 
-            Mockito.when(authService.login(Mockito.any(LoginRequestDTO.class))).thenReturn(response);
+            Mockito.when(authService.login(any(LoginRequestDTO.class))).thenReturn(response);
 
             mockMvc.perform(post("/auth/login")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -79,7 +81,7 @@ class AuthControllerTest {
             RegisterRequestDTO request = new RegisterRequestDTO("new@email.com", "password123");
             UserResponseDTO response = new UserResponseDTO("new@email.com");
 
-            Mockito.when(authService.register(Mockito.any(RegisterRequestDTO.class))).thenReturn(response);
+            Mockito.when(authService.register(any(RegisterRequestDTO.class))).thenReturn(response);
 
             mockMvc.perform(post("/auth/register")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -95,27 +97,24 @@ class AuthControllerTest {
         @Test
         void shouldReturn204_whenLogoutIsSuccessful() throws Exception {
             String token = "valid-jwt-token";
-            String authHeader = "Bearer " + token;
 
-            Mockito.when(jwtService.extractToken(Mockito.any(HttpServletRequest.class)))
-                    .thenReturn(token);
+            doNothing().when(authService).logout(any(HttpServletRequest.class));
 
             mockMvc.perform(post("/auth/logout")
-                            .header("Authorization", authHeader))
+                            .header("Authorization", "Bearer " + token))
                     .andExpect(status().isNoContent());
 
-            Mockito.verify(authService, Mockito.times(1)).logout(token);
+            verify(authService, times(1)).logout(any(HttpServletRequest.class));
         }
 
         @Test
         void shouldReturn204_whenTokenIsNull() throws Exception {
-            Mockito.when(jwtService.extractToken(Mockito.any(HttpServletRequest.class)))
-                    .thenReturn(null);
+            doNothing().when(authService).logout(any(HttpServletRequest.class));
 
             mockMvc.perform(post("/auth/logout"))
                     .andExpect(status().isNoContent());
 
-            Mockito.verify(authService, Mockito.times(1)).logout(null);
+            verify(authService, times(1)).logout(any(HttpServletRequest.class));
         }
     }
 

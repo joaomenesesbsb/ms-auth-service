@@ -1,8 +1,6 @@
 package com.meneses.auth.features.auth.service;
 
-import com.meneses.auth.features.auth.dto.LoginRequestDTO;
-import com.meneses.auth.features.auth.dto.LoginResponseDTO;
-import com.meneses.auth.features.auth.dto.RegisterRequestDTO;
+import com.meneses.auth.features.auth.dto.*;
 import com.meneses.auth.features.user.dto.UserResponseDTO;
 import com.meneses.auth.features.role.entity.Role;
 import com.meneses.auth.features.user.entity.User;
@@ -11,6 +9,7 @@ import com.meneses.auth.features.role.repository.RoleRepository;
 import com.meneses.auth.features.user.repository.UserRepository;
 import com.meneses.auth.security.JwtService;
 import com.meneses.auth.security.TokenBlacklistService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NonNull;
@@ -45,7 +44,7 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> {
                     logger.warn("Login attempt unregistered email address: [{}]", request.getEmail());
-                    return new ResourceNotFoundException("Not founnd user");
+                    return new ResourceNotFoundException("User not found");
                 });
 
         List<String> roles = user.getRoles().stream()
@@ -79,7 +78,7 @@ public class AuthService {
         Role role = roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> {
                     logger.error("Critical failure: ROLE_USER  is not configured in the database!");
-                    return new ResourceNotFoundException("Role não encontrada");
+                    return new ResourceNotFoundException("Role not found");
                 });
 
         user.getRoles().add(role);
@@ -89,11 +88,42 @@ public class AuthService {
         return new UserResponseDTO(user.getEmail());
     }
 
-    public void logout(String token) {
-        if (token != null) {
+    public void logout(HttpServletRequest request) {
+        if (request != null) {
+            String token = jwtService.extractToken(request);
             long expirationTime = jwtService.getExpirationInSeconds(token);
             blacklistService.blacklistToken(token, expirationTime);
             logger.info("Token successfully blacklisted.");
         }
+    }
+
+    public LoginResponseDTO refreshToken(@NonNull RefreshTokenRequestDTO request){
+        String oldToken = request.getRefreshToken();
+
+        if (!jwtService.isRefreshToken(oldToken)) {
+            logger.warn("Security Alert: Attempt to use non-refresh token for refresh operation");
+            throw new SecurityException("Invalid token type");
+        }
+
+        if (blacklistService.isBlacklisted(oldToken)) {
+            logger.error("Security Alert: Attempt to use a blacklisted token");
+            throw new RuntimeException("Token is blacklisted");
+        }
+
+        String email = jwtService.extractUsername(oldToken);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    logger.error("Refresh failed: User not found for email [{}]", email);
+                    return new ResourceNotFoundException("User not found");
+                   });
+
+        long expirationTime = jwtService.getExpirationInSeconds(oldToken);
+        blacklistService.blacklistToken(oldToken, expirationTime);
+
+        String newAccessToken = jwtService.generateToken(user);
+        String newRefreshToken = jwtService.generateRefreshToken(user);
+
+        logger.info("New refresh token successfully");
+        return new LoginResponseDTO(newAccessToken, newRefreshToken);
     }
 }

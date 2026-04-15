@@ -10,6 +10,7 @@ import com.meneses.auth.features.user.entity.User;
 import com.meneses.auth.features.user.repository.UserRepository;
 import com.meneses.auth.security.JwtService;
 import com.meneses.auth.security.TokenBlacklistService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -80,10 +81,9 @@ class AuthServiceTest {
         }
 
         @Test
-        @DisplayName("Deve lançar exceção quando a senha estiver incorreta")
         void shouldThrowException_whenPasswordIsIncorrect() {
 
-            LoginRequestDTO request = new LoginRequestDTO("teste@email.com", "senhaErrada");
+            LoginRequestDTO request = new LoginRequestDTO("test@email.com", "wrongPassword");
 
             when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.of(user));
             when(passwordEncoder.matches(request.getPassword(), user.getPassword())).thenReturn(false);
@@ -92,14 +92,13 @@ class AuthServiceTest {
                 authService.login(request);
             });
 
-            assertEquals("Senha inválida", exception.getMessage());
+            assertEquals("Invalid password", exception.getMessage());
         }
 
         @Test
-        @DisplayName("Deve lançar ResourceNotFoundException quando usuário não existir")
         void shouldThrowResourceNotFoundException_whenUserDoesNotExist() {
 
-            LoginRequestDTO request = new LoginRequestDTO("naoexiste@email.com", "123");
+            LoginRequestDTO request = new LoginRequestDTO("notExist@email.com", "123");
             when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
 
             assertThrows(ResourceNotFoundException.class, () -> {
@@ -111,17 +110,16 @@ class AuthServiceTest {
     @Nested
     class Register {
         @Test
-        @DisplayName("Deve lançar exceção ao registrar e-mail já duplicado")
         void shouldThrowException_whenEmailIsAlreadyRegistered() {
 
-            RegisterRequestDTO request = new RegisterRequestDTO("teste@email.com", "senha123");
+            RegisterRequestDTO request = new RegisterRequestDTO("test@email.com", "senha123");
             when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.of(user));
 
             RuntimeException exception = assertThrows(RuntimeException.class, () -> {
                 authService.register(request);
             });
 
-            assertEquals("Email já cadastrado", exception.getMessage());
+            assertEquals("Email already registered", exception.getMessage());
             verify(userRepository, never()).save(any());
         }
     }
@@ -130,21 +128,22 @@ class AuthServiceTest {
     class Logout {
 
         @Test
-        @DisplayName("Deve adicionar token na blacklist com sucesso quando o token for válido")
         void shouldBlacklistToken_whenValid() {
 
+            HttpServletRequest request = mock(HttpServletRequest.class);
             String token = "valid.jwt.token";
             long expirationSeconds = 3600L;
+
+            when(jwtService.extractToken(request)).thenReturn(token);
             when(jwtService.getExpirationInSeconds(token)).thenReturn(expirationSeconds);
 
-            authService.logout(token);
+            authService.logout(request);
 
             verify(jwtService, times(1)).getExpirationInSeconds(token);
             verify(blacklistService, times(1)).blacklistToken(token, expirationSeconds);
         }
 
         @Test
-        @DisplayName("Não deve interagir com serviços se o token for nulo")
         void shouldNotBlacklist_whenTokenIsNull() {
             authService.logout(null);
 

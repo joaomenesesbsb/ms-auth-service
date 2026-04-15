@@ -1,9 +1,7 @@
 package com.meneses.auth.features.auth.controller;
 
+import com.meneses.auth.features.auth.dto.*;
 import com.meneses.auth.features.auth.service.AuthService;
-import com.meneses.auth.features.auth.dto.LoginRequestDTO;
-import com.meneses.auth.features.auth.dto.LoginResponseDTO;
-import com.meneses.auth.features.auth.dto.RegisterRequestDTO;
 import com.meneses.auth.features.user.dto.UserResponseDTO;
 import com.meneses.auth.security.JwtService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,9 +24,6 @@ public class AuthControllerImpl implements AuthController{
     @Autowired
     private AuthService authService;
 
-    @Autowired
-    private JwtService jwtService;
-
     @Override
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO request) {
         logger.info("Login attempt for the user: [{}]", request.getEmail());
@@ -47,8 +42,17 @@ public class AuthControllerImpl implements AuthController{
 
     @Override
     public ResponseEntity<Void> logout(HttpServletRequest request) {
-        String token = jwtService.extractToken(request);
-        authService.logout(token);
+        logger.info("Logout requested");
+
+        authService.logout(request);
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<LoginResponseDTO> refreshToken(RefreshTokenRequestDTO request) {
+        logger.info("Token refresh requested");
+
+        LoginResponseDTO response = authService.refreshToken(request);
+        return ResponseEntity.ok(response);
     }
 }

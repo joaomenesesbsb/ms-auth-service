@@ -2,6 +2,7 @@ package com.meneses.auth.features.auth.controller;
 
 import com.meneses.auth.features.auth.dto.LoginRequestDTO;
 import com.meneses.auth.features.auth.dto.LoginResponseDTO;
+import com.meneses.auth.features.auth.dto.RefreshTokenRequestDTO;
 import com.meneses.auth.features.auth.dto.RegisterRequestDTO;
 import com.meneses.auth.features.user.dto.UserResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,5 +58,21 @@ public interface AuthController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request);
+    ResponseEntity<Void> logout(HttpServletRequest request);
+
+    @Operation(summary = "Refresh access token",
+            description = "Uses a valid Refresh Token to generate a new pair of Access and Refresh tokens.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Tokens refreshed successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponseDTO.class))),
+            @ApiResponse(responseCode = "401", description = "Invalid or expired refresh token",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid data or token format",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @PostMapping("/refresh")
+    ResponseEntity<LoginResponseDTO> refreshToken(@RequestBody RefreshTokenRequestDTO request);
+
 }
