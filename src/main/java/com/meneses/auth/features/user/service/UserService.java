@@ -40,7 +40,7 @@ public class UserService {
                     logger.warn("Tentativa de buscar usuário inexistente. ID: [{}]", id);
                     return new UserResponseDTO(user.getEmail());
                 })
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     @Transactional(readOnly = true)
